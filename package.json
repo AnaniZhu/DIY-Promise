@@ -4,8 +4,7 @@
   "description": "DIY Promises/A+ Compliance",
   "main": "promise.js",
   "scripts": {
-    "test": "promises-aplus-tests Promise.js",
-    "test2": "promises-aplus-tests Promise2.js"
+    "test": "promises-aplus-tests Promise.js"
   },
   "author": "AnnaniZhu",
   "license": "MIT",
