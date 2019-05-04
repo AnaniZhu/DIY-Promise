@@ -10,29 +10,26 @@
 
 > 避免回调地狱，优雅的异步编程方案
 
-
-
-#### 3. FIXME:
- - [ ] [规范2.3.3.3](https://promisesaplus.com/#point-56)
->  x 为 thenable 的情况目前还有问题，待修复...
-
-#### 4. TODO:
+#### 3. TODO:
 - [x] Promise.prototype.then()
-- [ ] Promise.prototype.catch()
+- [x] Promise.prototype.catch()
 - [ ] Promise.prototype.finally()
 - [ ] Promise.resolve
 - [ ] Promise.reject
 - [ ] Promise.all
 - [ ] Promise.race
 
-#### 5. 测试
+#### 4. 测试
 
 ```
 npm run test
 ```
+##### 测试用例结果:
+<img src="./images/pass-test.png" height="250" />
+
  - [Promise A+ 规范测试用例](https://github.com/promises-aplus/promises-tests)
 
 ### 参考
 - [Promise A+ 规范【英文】](https://promisesaplus.com/)
-- [Promise A+ 规范【中文】](https://malcolmyu.github.io/2015/06/12/Promises-A-Plus/#note-4)
+- [Promise A+ 规范【中文】](https://malcolmyu.github.io/2015/06/12/Promises-A-Plus/)
 

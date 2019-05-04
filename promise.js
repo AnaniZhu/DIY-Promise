@@ -36,8 +36,6 @@ class Promise2 {
     }
   }
   setPromise(status, value) {
-    nextTick(() => {
-      // debugger;
       if (this.status !== STATUS.PEDDING) {
         return;
       }
@@ -57,7 +55,6 @@ class Promise2 {
       });
 
       this.taskQueue = [];
-    });
   }
   // 2.3 Promise解析过程
   resolvePromise(promise, x) {
@@ -71,34 +68,29 @@ class Promise2 {
     }
     // 2.3.2 如果 x 是一个promise, 采用其状态
     if (x instanceof Promise2) {
-      x.then(
-        value => {
-          promise.setPromise(STATUS.FULFILLED, value);
-        },
-        error => {
-          promise.setPromise(STATUS.REJECTED, error);
-        }
-      );
-      // switch (x.status) {
-      //   case STATUS.FULFILLED:
-      //     promise.setPromise(STATUS.FULFILLED, x.value);
-      //     break;
-      //   case STATUS.REJECTED:
-      //     promise.setPromise(STATUS.REJECTED, x.value);
-      //     break;
-      //   case STATUS.PEDDING:
-      //     x.then(
-      //       value => {
-      //         promise.setPromise(STATUS.FULFILLED, value);
-      //       },
-      //       error => {
-      //         promise.setPromise(STATUS.REJECTED, error);
-      //       }
-      //     );
-      //     break;
-      //   default:
-      //     break;
-      // }
+      // x.then(
+      //   value => promise.resolvePromise(promise, value),
+      //   error => promise.setPromise(STATUS.REJECTED, error)
+      // );
+
+      // 当 value 为 Promise 时，resolve 的值无法确定类型，需要再走一遍 resolvePromise
+      switch (x.status) {
+        // 2.3.2.2 如果 x 处于执行态，用相同的值执行 promise
+        case STATUS.FULFILLED:
+          promise.resolvePromise(promise, x.value)
+          break;
+        // 2.3.2.3 如果 x 处于拒绝态，用相同的据因拒绝 promise
+        case STATUS.REJECTED:
+          promise.setPromise(STATUS.REJECTED, x.value);
+          break;
+        //  2.3.2.1 如果 x 处于等待态， promise 需保持为等待态直至 x 被执行或拒绝
+        case STATUS.PEDDING:
+          x.then(
+            value => promise.resolvePromise(promise, value),
+            error => promise.setPromise(STATUS.REJECTED, error)
+          );
+          break;
+      }
       return;
     }
     let type = getVariableType(x);
@@ -125,7 +117,6 @@ class Promise2 {
         const resolvePromise = y => {
           if (!isCalled) {
             isCalled = true;
-            // promise.setPromise(STATUS.FULFILLED, y);
             this.resolvePromise(promise, y);
           }
         };
@@ -159,14 +150,16 @@ class Promise2 {
     }
   }
   triggerCallback(promise, callback) {
-    let x;
-    try {
-      x = callback(this.value);
-    } catch (error) {
-      promise.setPromise(STATUS.REJECTED, error);
-      return;
-    }
-    this.resolvePromise(promise, x);
+    nextTick(() => {
+      let x;
+      try {
+        x = callback(this.value);
+      } catch (error) {
+        promise.setPromise(STATUS.REJECTED, error);
+        return;
+      }
+      this.resolvePromise(promise, x);
+    })
   }
   then(onFulfilled, onRejected) {
     let promise = new Promise2(() => {});
