@@ -1,3 +1,4 @@
+// 旧的实现
 const STATUS = {
   PEDDING: "Pending",
   FULFILLED: "Fulfilled",
